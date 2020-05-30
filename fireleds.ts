@@ -39,6 +39,17 @@ namespace fireled
             }
         }
 
+        /* Gets the colour of a single FireLed - the value returned is including the brightness setting*/
+        getPixel(pixel: number)
+        {
+            pixel = pixel % this.numLeds;
+            let g = this.ledBuffer[pixel*3];
+            let r = this.ledBuffer[pixel*3+1];
+            let b = this.ledBuffer[pixel*3+2];
+
+            return ((r << 16) | (g << 8) | b)
+        }
+
         /* Sets the brightness for future updates */
         setBrightness(bright: number)
         {
@@ -81,6 +92,23 @@ namespace fireled
             this.ledBuffer[2] = 0;
         }
 
+        /* Shift band left one pixel, blanking last pixel */
+        shiftBandLeft()
+        {
+            let step=3;
+            let j = 0;
+            for (let i=1; i<this.numLeds; i++)
+            {
+                this.ledBuffer[j+0] = this.ledBuffer[j+0+step];
+                this.ledBuffer[j+1] = this.ledBuffer[j+1+step];
+                this.ledBuffer[j+2] = this.ledBuffer[j+2+step];
+                j = j + step;
+            }
+            this.ledBuffer[j+0] = 0;
+            this.ledBuffer[j+1] = 0;
+            this.ledBuffer[j+2] = 0;
+        }
+
         /* Rotate band right one pixel, last pixel moves to first */
         rotateBand()
         {
@@ -93,6 +121,20 @@ namespace fireled
             this.ledBuffer[0] = r;
             this.ledBuffer[1] = g;
             this.ledBuffer[2] = b;
+        }
+
+        /* Rotate band left one pixel, first pixel moves to last */
+        rotateBandLeft()
+        {
+            let step=3;
+            let last = this.numLeds * step - step;
+            let r = this.ledBuffer[0];
+            let g = this.ledBuffer[1];
+            let b = this.ledBuffer[2];
+            this.shiftBandLeft();
+            this.ledBuffer[last+0] = r;
+            this.ledBuffer[last+1] = g;
+            this.ledBuffer[last+2] = b;
         }
 
         /* Update the FireLeds to match the buffer */
