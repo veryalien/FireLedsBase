@@ -43,9 +43,9 @@ namespace fireled
         getPixel(pixel: number)
         {
             pixel = pixel % this.numLeds;
-            let g = this.ledBuffer[pixel*3];
-            let r = this.ledBuffer[pixel*3+1];
-            let b = this.ledBuffer[pixel*3+2];
+            let g = int((this.ledBuffer[pixel*3] << 8) / bright);
+            let r = int((this.ledBuffer[pixel*3+1] << 8) / bright);
+            let b = int((this.ledBuffer[pixel*3+2] << 8) / bright);
 
             return ((r << 16) | (g << 8) | b)
         }
